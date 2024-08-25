@@ -1,0 +1,60 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.InputPage {
+    margin: 20px;
+}
+
+.OutputPage {
+    position: relative;
+    margin: 0 auto;
+    width: 80%;
+    height: 600px;
+}
+
+.floor {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #000;
+    padding: 10px 0;
+    height: 80px;
+    align-items: center;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.lift-container {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.lift {
+    width: 50px;
+    height: 80px;
+    background-color: blue;
+    transition: transform 2s ease-in-out;
+}
+
+label {
+    margin-right: 10px;
+}
+
+input {
+    margin-right: 10px;
+}
+
+button {
+    padding: 5px 10px;
+    cursor: pointer;
+}
