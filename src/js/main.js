@@ -1,54 +1,132 @@
-document.querySelector(".GenerateButton").addEventListener("click", function () {
-    const floorNumber = parseInt(document.getElementById("floorNumber").value);
-    const liftNumber = parseInt(document.getElementById("liftNumber").value);
-    const outputPage = document.querySelector(".OutputPage");
+// data states for lift, floor and requests
+let lifts = [];
+let floors = [];
+let liftRequests = [];
 
-    outputPage.innerHTML = "";
+function generateSimulation() {
+  const numLifts = parseInt(document.getElementById("numLifts").value);
+  const numFloors = parseInt(document.getElementById("numFloors").value);
+  const buildingContainer = document.getElementById("building-container");
+  const liftsContainer = document.getElementById("lifts-container");
+  buildingContainer.innerHTML = "";
+  liftsContainer.innerHTML = "";
+  lifts = [];
+  floors = [];
+  liftRequests = [];
 
-    // Generate Floors
-    for (let floors = floorNumber; floors > 0; floors--) {
-        const floorDiv = document.createElement("div");
-        floorDiv.classList.add("floor");
-        floorDiv.id = `floor-${floors}`;
+  // Create building structure
+  const building = document.createElement("div");
+  building.className = "building";
+  buildingContainer.appendChild(building);
 
-        const floorLabel = document.createElement("label");
-        floorLabel.innerText = `Floor ${floors}`;
-        floorDiv.appendChild(floorLabel);
+  // Generate floors
+  for (let i = 0; i < numFloors; i++) {
+    const floor = document.createElement("div");
+    floor.className = "floor";
+    floor.innerHTML = `
+            <span class="floor-number">Floor ${i}</span>
+            <div class="buttons">
+                <button onclick="callLift(${i}, 'up')" ${
+      i === numFloors - 1 ? "disabled" : ""
+    }> Up ▲</button>
+                <button onclick="callLift(${i}, 'down')" ${
+      i === 0 ? "disabled" : ""
+    }> Down ▼</button>
+            </div>
+        `;
+    building.appendChild(floor);
+    floors.push(floor);
+  }
 
-        const buttonContainer = document.createElement("div");
-        buttonContainer.classList.add("button-container");
+  // Create lift shafts container
+  const liftShafts = document.createElement("div");
+  liftShafts.className = "lift-shafts-container";
+  liftShafts.style.width = `${numLifts * 100}px`;
+  liftsContainer.appendChild(liftShafts);
 
-        const upButton = document.createElement("button");
-        upButton.innerText = "Up";
-        upButton.classList.add("up");
-        buttonContainer.appendChild(upButton);
+  // Generate lifts
+  for (let i = 0; i < numLifts; i++) {
+    const liftShaft = document.createElement("div");
+    liftShaft.className = "lift-shaft";
+    liftShaft.style.height = `${numFloors * 100}px`;
+    const lift = document.createElement("div");
+    lift.className = "lift";
+    lift.id = `lift-${i}`;
+    lift.innerHTML = `
+            <div class="lift-door left"></div>
+            <div class="lift-door right"></div>
+        `;
+    liftShaft.appendChild(lift);
+    liftShafts.appendChild(liftShaft);
+    lifts.push({ element: lift, currentFloor: 0, isBusy: false });
+  }
 
-        const downButton = document.createElement("button");
-        downButton.innerText = "Down";
-        downButton.classList.add("down");
-        buttonContainer.appendChild(downButton);
+  // Synchronize scrolling
+  buildingContainer.onscroll = function () {
+    liftsContainer.scrollTop = buildingContainer.scrollTop;
+  };
+  liftsContainer.onscroll = function () {
+    buildingContainer.scrollTop = liftsContainer.scrollTop;
+  };
+}
 
-        // Disable Up button for the topmost floor and Down button for the lowest floor
-        if (floors === floorNumber) upButton.disabled = true; 
-        if (floors === 1) downButton.disabled = true;
+function callLift(floorNum, direction) {
+  liftRequests.push({ floor: floorNum, direction });
+  processLiftRequests();
+}
 
-        // Add event listeners for the buttons
-        upButton.addEventListener("click", () => moveLiftToFloor(floors));
-        downButton.addEventListener("click", () => moveLiftToFloor(floors));
+function processLiftRequests() {
+  if (liftRequests.length === 0) return;
 
-        floorDiv.appendChild(buttonContainer);
-        outputPage.appendChild(floorDiv);
-    }
+  const availableLift = lifts.find((lift) => !lift.isBusy);
+  if (availableLift) {
+    const request = liftRequests.shift();
+    moveLift(availableLift, request.floor);
+  }
+}
 
-    // Generate Lifts
-    const liftContainer = document.createElement("div");
-    liftContainer.classList.add("lift-container");
-    outputPage.appendChild(liftContainer);
+function moveLift(lift, targetFloor) {
+  // If the lift is already on the target floor, do nothing
+  if (lift.currentFloor === targetFloor) return;
+  lift.isBusy = true;
+  const distance = Math.abs(targetFloor - lift.currentFloor);
+  const speedPerFloor = 2000; // per floor 2 seconds
+  const totalTravelTime = distance * speedPerFloor; // Total time to travel to the target floor
 
-    for (let lifts = 0; lifts < liftNumber; lifts++) {
-        const liftDiv = document.createElement("div");
-        liftDiv.classList.add("lift");
-        liftDiv.id = `lift-${lifts + 1}`;
-        liftContainer.appendChild(liftDiv);
-    }
-});
+  // Calculate the bottom position based on the target floor (adding 5px offset)
+  const floorHeight = 100; 
+  lift.element.style.transition = `bottom ${totalTravelTime}ms ease-in-out`; // Dynamic transition time
+  lift.element.style.bottom = `${targetFloor * floorHeight + 5}px`; // Move lift
+
+  // Update the lift's current floor after moving
+  lift.currentFloor = targetFloor;
+
+  // Wait for the lift to reach the target floor before opening doors
+  setTimeout(() => {
+    openDoors(lift); 
+    setTimeout(() => {
+      closeDoors(lift); 
+      setTimeout(() => {
+        lift.isBusy = false; // Mark the lift as available after doors close
+        processLiftRequests(); // Process any pending lift requests
+      }, 2500); 
+    }, 2500); 
+  }, totalTravelTime); // Wait for the lift to move to the target floor
+}
+
+function openDoors(lift) {
+  const leftDoor = lift.element.querySelector(".lift-door.left");
+  const rightDoor = lift.element.querySelector(".lift-door.right");
+  leftDoor.classList.add("open");
+  rightDoor.classList.add("open");
+}
+
+function closeDoors(lift) {
+  const leftDoor = lift.element.querySelector(".lift-door.left");
+  const rightDoor = lift.element.querySelector(".lift-door.right");
+  leftDoor.classList.remove("open");
+  rightDoor.classList.remove("open");
+}
+
+// Initial generation
+generateSimulation();

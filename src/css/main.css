@@ -1,60 +1,106 @@
-body {
+body, html {
     font-family: Arial, sans-serif;
-    text-align: center;
     margin: 0;
     padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+h2{
+    display: inline;
+    margin-right: 5px;
 }
 
-.InputPage {
-    margin: 20px;
+#button {
+    background-color: #333;
+    color: white;
 }
-
-.OutputPage {
-    position: relative;
-    margin: 0 auto;
-    width: 80%;
-    height: 600px;
+#inputs {
+    padding: 20px;
+    background-color: #f0f0f0;
 }
-
-.floor {
+#simulation-container {
     display: flex;
-    justify-content: space-between;
-    border-top: 1px solid #000;
-    padding: 10px 0;
-    height: 80px;
-    align-items: center;
+    height: calc(100vh - 80px);
+    overflow: hidden;
 }
-
-.button-container {
+#building-container {
+    flex: 0 0 200px;
+    overflow-y: auto;
+    border-right: 1px solid #ccc;
+}
+.building {
+    display: flex;
+    flex-direction: column-reverse;
+}
+.floor {
+    height: 90px;
+    border-top: 1px solid #333;
+    border-bottom: 1px solid #333;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+}
+.floor-number {
+    font-weight: bold;
+}
+#lifts-container {
+    flex: 1;
+    overflow-x: auto;
+    position: relative;
+}
+.lift-shafts-container {
+    display: flex;
+    height: 100%;
+}
+.lift-shaft {
+    width: 80px;
+    position: relative;
+    margin-left: 10px;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+}
+.lift {
+    width: 60px;
+    height: 90px;
+    background-color: #ddd;
+    position: absolute;
+    left: 10px;
+    bottom: 5px;
+    transition: bottom 0.5s ease-in-out;
+    overflow: hidden;
+}
+.lift-door {
+    width: 30px;
+    height: 90px;
+    background-color: #888;
+    position: absolute;
+    top: 0;
+    transition: transform 2.5s ease-in-out;
+}
+.lift-door.left {
+    left: 0;
+    transform-origin: left;
+}
+.lift-door.right {
+    right: 0;
+    transform-origin: right;
+}
+.lift-door.open.left {
+    transform: translateX(-100%);
+}
+.lift-door.open.right {
+    transform: translateX(100%);
+}
+.buttons {
     display: flex;
     flex-direction: column;
-    gap: 10px;
 }
-
-.lift-container {
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-}
-
-.lift {
-    width: 50px;
-    height: 80px;
-    background-color: blue;
-    transition: transform 2s ease-in-out;
-}
-
-label {
-    margin-right: 10px;
-}
-
-input {
-    margin-right: 10px;
-}
-
 button {
+    margin: 2px;
     padding: 5px 10px;
-    cursor: pointer;
+}
+button:disabled {
+    opacity: 0.5;
 }

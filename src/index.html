@@ -7,19 +7,17 @@
     <link rel="stylesheet" href="./css/main.css">
 </head>
 <body>
-    <div class="InputPage">
-        <h1>Lift Simulation.</h1>
-        <div class="num_of_floors input_container">
-            <label for="floorNumber">Number of floors</label>
-            <input type="Number" id="floorNumber" class="lift-sim_input" placeholder="" required />
-        </div>
-        <div class="no_of_lift input_container">
-            <label for="liftNumber">Number of lifts</label>
-            <input type="Number" id="liftNumber" class="lift-sim_input" placeholder="" required />
-        </div>
-        <button class="GenerateButton">Simulate</button>
+    <div id="inputs">
+        <h2>Lift Simulation</h2>
+        <label for="numLifts">Number of Lifts:</label>
+        <input type="number" id="numLifts" min="1" max="99" value="2">
+        <label for="numFloors">Number of Floors:</label>
+        <input type="number" id="numFloors" min="1" max="99" value="5">
+        <button id="button" onclick="generateSimulation()">Generate Simulation</button>
     </div>
-    <div class="OutputPage">
+    <div id="simulation-container">
+        <div id="building-container"></div>
+        <div id="lifts-container"></div>
     </div>
     <script src="./js/main.js"></script>
 </body>
