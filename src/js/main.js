@@ -1,6 +1,8 @@
-// data states for lift, floor and requests
-let lifts = [];
+// Data states for lift, floor, and requests
+let liftsUp = [];
+let liftsDown = [];
 let floors = [];
+let floorRequests = {}; // To track active requests per floor
 let liftRequests = [];
 
 function generateSimulation() {
@@ -10,8 +12,10 @@ function generateSimulation() {
   const liftsContainer = document.getElementById("lifts-container");
   buildingContainer.innerHTML = "";
   liftsContainer.innerHTML = "";
-  lifts = [];
+  liftsUp = [];
+  liftsDown = [];
   floors = [];
+  floorRequests = {}; // Reset requests per floor
   liftRequests = [];
 
   // Create building structure
@@ -36,6 +40,9 @@ function generateSimulation() {
         `;
     building.appendChild(floor);
     floors.push(floor);
+
+    // Initialize request tracking for each floor
+    floorRequests[i] = { up: false, down: false };
   }
 
   // Create lift shafts container
@@ -58,7 +65,13 @@ function generateSimulation() {
         `;
     liftShaft.appendChild(lift);
     liftShafts.appendChild(liftShaft);
-    lifts.push({ element: lift, currentFloor: 0, isBusy: false });
+
+    // Assign first half of lifts to handle "Up" requests, the second half to "Down"
+    if (i % 2 === 0) {
+      liftsUp.push({ element: lift, currentFloor: 0, isBusy: false });
+    } else {
+      liftsDown.push({ element: lift, currentFloor: 0, isBusy: false });
+    }
   }
 
   // Synchronize scrolling
@@ -70,30 +83,47 @@ function generateSimulation() {
   };
 }
 
+
 function callLift(floorNum, direction) {
-  liftRequests.push({ floor: floorNum, direction });
-  processLiftRequests();
-}
+    // Check if there's already an active request in this direction for this floor
+    if (floorRequests[floorNum][direction]) {
+      console.log(`Request for ${direction} already active on floor ${floorNum}`);
+      return; // Ignore duplicate request
+    }
+  
+    // Mark the request as active
+    floorRequests[floorNum][direction] = true;
+    liftRequests.push({ floor: floorNum, direction });
+    processLiftRequests();
+  }
 
 function processLiftRequests() {
   if (liftRequests.length === 0) return;
 
-  const availableLift = lifts.find((lift) => !lift.isBusy);
+  const request = liftRequests.shift(); // Get the next request
+
+  // Select lifts based on the direction
+  const availableLifts = request.direction === "up" ? liftsUp : liftsDown;
+
+  // Find the first available lift
+  const availableLift = availableLifts.find((lift) => !lift.isBusy);
+
   if (availableLift) {
-    const request = liftRequests.shift();
-    moveLift(availableLift, request.floor);
+    moveLift(availableLift, request.floor, request.direction);
+  } else {
+    // If no lift is available, push the request back to the queue
+    liftRequests.unshift(request);
   }
 }
 
 function moveLift(lift, targetFloor) {
-  // If the lift is already on the target floor, do nothing
   lift.isBusy = true;
   const distance = Math.abs(targetFloor - lift.currentFloor);
-  const speedPerFloor = 2000; // per floor 2 seconds
+  const speedPerFloor = 2000; // 2 seconds per floor
   const totalTravelTime = distance * speedPerFloor; // Total time to travel to the target floor
 
   // Calculate the bottom position based on the target floor (adding 5px offset)
-  const floorHeight = 100; 
+  const floorHeight = 100;
   lift.element.style.transition = `bottom ${totalTravelTime}ms ease-in-out`; // Dynamic transition time
   lift.element.style.bottom = `${targetFloor * floorHeight + 5}px`; // Move lift
 
@@ -102,23 +132,23 @@ function moveLift(lift, targetFloor) {
 
   // Wait for the lift to reach the target floor before opening doors
   setTimeout(() => {
-    openDoors(lift); 
+    openDoors(lift);
     setTimeout(() => {
-      closeDoors(lift); 
+      closeDoors(lift);
       setTimeout(() => {
         lift.isBusy = false; // Mark the lift as available after doors close
         processLiftRequests(); // Process any pending lift requests
-      }, 2500); 
-    }, 2500); 
+      }, 2500);
+    }, 2500);
   }, totalTravelTime); // Wait for the lift to move to the target floor
 }
 
 function openDoors(lift) {
-    console.log("Opening doors for lift:", lift); // Debugging statement
-    const leftDoor = lift.element.querySelector('.lift-door.left');
-    const rightDoor = lift.element.querySelector('.lift-door.right');
-    leftDoor.classList.add('open');
-    rightDoor.classList.add('open');
+  console.log("Opening doors for lift:", lift);
+  const leftDoor = lift.element.querySelector(".lift-door.left");
+  const rightDoor = lift.element.querySelector(".lift-door.right");
+  leftDoor.classList.add("open");
+  rightDoor.classList.add("open");
 }
 
 function closeDoors(lift) {
