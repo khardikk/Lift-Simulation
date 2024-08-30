@@ -87,7 +87,6 @@ function processLiftRequests() {
 
 function moveLift(lift, targetFloor) {
   // If the lift is already on the target floor, do nothing
-  if (lift.currentFloor === targetFloor) return;
   lift.isBusy = true;
   const distance = Math.abs(targetFloor - lift.currentFloor);
   const speedPerFloor = 2000; // per floor 2 seconds
@@ -115,10 +114,11 @@ function moveLift(lift, targetFloor) {
 }
 
 function openDoors(lift) {
-  const leftDoor = lift.element.querySelector(".lift-door.left");
-  const rightDoor = lift.element.querySelector(".lift-door.right");
-  leftDoor.classList.add("open");
-  rightDoor.classList.add("open");
+    console.log("Opening doors for lift:", lift); // Debugging statement
+    const leftDoor = lift.element.querySelector('.lift-door.left');
+    const rightDoor = lift.element.querySelector('.lift-door.right');
+    leftDoor.classList.add('open');
+    rightDoor.classList.add('open');
 }
 
 function closeDoors(lift) {
