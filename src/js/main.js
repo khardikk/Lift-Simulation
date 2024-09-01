@@ -115,7 +115,7 @@ function processLiftRequests() {
       closeDoors(liftAtFloor);
       setTimeout(() => {
         floorRequests[floor][direction] = false; // Reset request for the direction
-        console.log(`Request for ${direction} cleared on floor ${floor}`); // Debugging statement
+        console.log(`Request for ${direction} cleared on floor ${floor}`); 
         processLiftRequests(); // Process any pending lift requests
       }, 2500);
     }, 2500);
@@ -154,11 +154,11 @@ function moveLift(lift, targetFloor, direction) {
       setTimeout(() => {
         lift.isBusy = false; // Mark the lift as available after doors close
         floorRequests[targetFloor][direction] = false; // Reset request for the direction
-        console.log(`Request for ${direction} cleared on floor ${targetFloor}`); // Debugging statement
+        console.log(`Request for ${direction} cleared on floor ${targetFloor}`); 
         processLiftRequests(); // Process any pending lift requests
       }, 2500);
     }, 2500);
-  }, totalTravelTime); // Wait for the lift to move to the target floor
+  }, totalTravelTime); 
 }
 function openDoors(lift) {
   console.log("Opening doors for lift:", lift);
@@ -175,5 +175,4 @@ function closeDoors(lift) {
   rightDoor.classList.remove("open");
 }
 
-// Initial generation
 generateSimulation();
