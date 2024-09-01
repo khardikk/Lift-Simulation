@@ -101,18 +101,34 @@ function processLiftRequests() {
   if (liftRequests.length === 0) return;
 
   const request = liftRequests.shift(); // Get the next request
-
+  const { floor, direction } = request;
   // Select lifts based on the direction
   const availableLifts = request.direction === "up" ? liftsUp : liftsDown;
 
-  // Find the first available lift
-  const availableLift = availableLifts.find((lift) => !lift.isBusy);
+   // Check if there is a lift already at the requested floor and not busy
+   const liftAtFloor = availableLifts.find((lift) => lift.currentFloor === floor && !lift.isBusy);
 
-  if (availableLift) {
-    moveLift(availableLift, request.floor, request.direction);
+   if (liftAtFloor) {
+    // If a lift is already at the requested floor and is not busy, use it
+    openDoors(liftAtFloor);
+    setTimeout(() => {
+      closeDoors(liftAtFloor);
+      setTimeout(() => {
+        floorRequests[floor][direction] = false; // Reset request for the direction
+        console.log(`Request for ${direction} cleared on floor ${floor}`); // Debugging statement
+        processLiftRequests(); // Process any pending lift requests
+      }, 2500);
+    }, 2500);
   } else {
-    // If no lift is available, push the request back to the queue
-    liftRequests.unshift(request);
+    // If no lift is present at the requested floor, find the nearest available lift
+    const availableLift = availableLifts.find((lift) => !lift.isBusy);
+
+    if (availableLift) {
+      moveLift(availableLift, request.floor, request.direction);
+    } else {
+      // If no lift is available, push the request back to the queue
+      liftRequests.unshift(request);
+    }
   }
 }
 
@@ -144,7 +160,6 @@ function moveLift(lift, targetFloor, direction) {
     }, 2500);
   }, totalTravelTime); // Wait for the lift to move to the target floor
 }
-
 function openDoors(lift) {
   console.log("Opening doors for lift:", lift);
   const leftDoor = lift.element.querySelector(".lift-door.left");
