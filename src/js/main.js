@@ -116,7 +116,7 @@ function processLiftRequests() {
   }
 }
 
-function moveLift(lift, targetFloor) {
+function moveLift(lift, targetFloor, direction) {
   lift.isBusy = true;
   const distance = Math.abs(targetFloor - lift.currentFloor);
   const speedPerFloor = 2000; // 2 seconds per floor
@@ -137,6 +137,8 @@ function moveLift(lift, targetFloor) {
       closeDoors(lift);
       setTimeout(() => {
         lift.isBusy = false; // Mark the lift as available after doors close
+        floorRequests[targetFloor][direction] = false; // Reset request for the direction
+        console.log(`Request for ${direction} cleared on floor ${targetFloor}`); // Debugging statement
         processLiftRequests(); // Process any pending lift requests
       }, 2500);
     }, 2500);
