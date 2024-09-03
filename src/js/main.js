@@ -8,6 +8,17 @@ let liftRequests = [];
 function generateSimulation() {
   const numLifts = parseInt(document.getElementById("numLifts").value);
   const numFloors = parseInt(document.getElementById("numFloors").value);
+
+   // Input validation: Check if numLifts is less than 1 or numFloors is less than 2
+   if (isNaN(numLifts) || numLifts < 1) {
+    alert("Number of lifts have to be greater than or equal to 1.");
+    return;
+  }
+  if (isNaN(numFloors) || numFloors < 2) {
+    alert("Number of floors have to be greater than or equal to 2.");
+    return;
+  }
+
   const buildingContainer = document.getElementById("building-container");
   const liftsContainer = document.getElementById("lifts-container");
   buildingContainer.innerHTML = "";
@@ -183,4 +194,4 @@ function closeDoors(lift) {
   rightDoor.classList.remove("open");
 }
 
-generateSimulation();
+// generateSimulation();
