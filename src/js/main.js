@@ -14,8 +14,8 @@ function generateSimulation() {
     alert("Number of lifts have to be greater than or equal to 1.");
     return;
   }
-  if (isNaN(numFloors) || numFloors < 2) {
-    alert("Number of floors have to be greater than or equal to 2.");
+  if (isNaN(numFloors) || numFloors < 1) {
+    alert("Number of floors have to be greater than or equal to 1.");
     return;
   }
 
