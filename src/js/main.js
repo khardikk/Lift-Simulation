@@ -9,8 +9,8 @@ function generateSimulation() {
   const numLifts = parseInt(document.getElementById("numLifts").value);
   const numFloors = parseInt(document.getElementById("numFloors").value);
 
-   // Input validation: Check if numLifts is less than 1 or numFloors is less than 2
-   if (isNaN(numLifts) || numLifts < 1) {
+  // Input validation: Check if numLifts is less than 1 or numFloors is less than 2
+  if (isNaN(numLifts) || numLifts < 1) {
     alert("Number of lifts have to be greater than or equal to 1.");
     return;
   }
@@ -158,10 +158,10 @@ function moveLift(lift, targetFloor, direction) {
   const speedPerFloor = 2000; // 2 seconds per floor
   const totalTravelTime = distance * speedPerFloor; // Total time to travel to the target floor
 
-  // Calculate the bottom position based on the target floor (adding 5px offset)
+  // Calculate the bottom position based on the target floor
   const floorHeight = 100;
   lift.element.style.transition = `bottom ${totalTravelTime}ms ease-in-out`; // Dynamic transition time
-  lift.element.style.bottom = `${targetFloor * floorHeight + 5}px`; // Move lift
+  lift.element.style.bottom = `${targetFloor * floorHeight}px`; // Move lift (removed 5px offset)
 
   // Wait for the lift to reach the target floor before opening doors
   setTimeout(() => {
@@ -193,5 +193,14 @@ function closeDoors(lift) {
   leftDoor.classList.remove("open");
   rightDoor.classList.remove("open");
 }
+
+//input fields to restrict input to numbers only
+document.getElementById("numLifts").addEventListener("input", function(e) {
+  this.value = this.value.replace(/[^0-9]/g, '');
+});
+
+document.getElementById("numFloors").addEventListener("input", function(e) {
+  this.value = this.value.replace(/[^0-9]/g, '');
+});
 
 // generateSimulation();
