@@ -37,10 +37,10 @@ function generateSimulation() {
     floor.innerHTML = `
             <span class="floor-number">Floor ${i}</span>
             <div class="buttons">
-                <button onclick="callLift(${i}, 'up')" ${
-      i === numFloors - 1 ? "disabled" : ""
+               <button onclick="${numFloors >= 1 ? `callLift(${i}, 'up')` : ''}" ${
+      i === numFloors - 1 ? "enabled" : ""
     }> Up ▲</button>
-                <button onclick="callLift(${i}, 'down')" ${
+                <button onclick="${numFloors > 1 ? `callLift(${i}, 'down')` : ''}" ${
       i === 0 ? "disabled" : ""
     }> Down ▼</button>
             </div>
